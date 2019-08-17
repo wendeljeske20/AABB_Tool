@@ -2044,7 +2044,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1314354024}
-        m_MethodName: Clear
+        m_MethodName: ClearPoints
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2559,7 +2559,7 @@ GameObject:
   - component: {fileID: 946578890}
   - component: {fileID: 946578889}
   m_Layer: 5
-  m_Name: LoadConfigtButton
+  m_Name: LoadConfigButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2623,7 +2623,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1314354024}
+      - m_Target: {fileID: 1661352144}
         m_MethodName: LoadConfigData
         m_Mode: 1
         m_Arguments:
@@ -3884,13 +3884,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1314354018}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.12, y: 4.625511, z: -7.5604544}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -1.14, y: 3.15, z: 8.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &1314354023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3918,6 +3918,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7289a7a22afbc4428048a840e64a09c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointCount: 0
+  wireframeMode: 0
+  quadMode: 0
+  pointSize: 0
+  boxColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1322780146
 GameObject:
   m_ObjectHideFlags: 0
@@ -3950,7 +3955,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 76.7, y: -14.919998}
+  m_AnchoredPosition: {x: 76.70001, y: -14.920044}
   m_SizeDelta: {x: 139.29, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1322780148
@@ -4156,9 +4161,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1222413577}
   m_Direction: 0
   m_MinValue: 0.005
-  m_MaxValue: 0.2
+  m_MaxValue: 0.5
   m_WholeNumbers: 0
-  m_Value: 0.05
+  m_Value: 0.005
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4240,7 +4245,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1314354024}
+      - m_Target: {fileID: 1661352144}
         m_MethodName: SaveConfigData
         m_Mode: 1
         m_Arguments:
@@ -4876,11 +4881,12 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1661352143}
+  - component: {fileID: 1661352144}
   - component: {fileID: 1661352142}
   - component: {fileID: 1661352141}
   - component: {fileID: 1661352140}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4965,6 +4971,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1661352144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1661352139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1491babf7ef057b4abd62c6807b3aaa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tool: {fileID: 1314354024}
+  pointSizeSlider: {fileID: 1402295360}
+  boxRedColorSlider: {fileID: 2136260528}
+  boxGreenColorSlider: {fileID: 437334287}
+  boxBlueColorSlider: {fileID: 1365528815}
+  boxAlphaColorSlider: {fileID: 894014190}
+  wireframeToggle: {fileID: 1470273571}
+  quadToggle: {fileID: 1259182797}
+  pointAmountText: {fileID: 1322780148}
 --- !u!1 &1663814796
 GameObject:
   m_ObjectHideFlags: 0
@@ -5036,7 +5062,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.7000122, y: 7.600006}
+  m_AnchoredPosition: {x: 0.7000122, y: 7.5999756}
   m_SizeDelta: {x: 0, y: -314.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1694882333
