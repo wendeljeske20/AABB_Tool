@@ -149,8 +149,7 @@ namespace VIZLab
                 GUI.Label(rect, "Middle Mouse Button - Move");
                 rect.position += Vector2.up * 20;
                 GUI.Label(rect, "Move or Rotate to close this");
-                rect.position += Vector2.up * 20;
-                GUI.Label(rect, "Z - Remove last point");
+              
             }
         }
 

@@ -8,20 +8,23 @@ using VIZLab;
 public class Tool : BaseTool<PointsData>
 {
     //public string[] splittedText;
-    public float pointSize;
+    float pointSize;
     //public Color pointColor;
     float lowestPointX, greaterPointX, lowestPointY, greaterPointY, lowestPointZ, greaterPointZ;
     GizmoCamera gizmoCamera;
     Material material;
 
     Slider pointSizeSlider, boxRedColorSlider, boxGreenColorSlider, boxBlueColorSlider, boxAlphaColorSlider;
-    Toggle wireframeToggle;
+    Toggle wireframeToggle, quadToggle;
 
+    Text pointAmountText;
     Color boxColor;
 
     bool canSpawnPoints = true;
 
-    bool wireframe;
+    bool wireframeMode, quadMode;
+    int pointFaceAmount;
+
     void Start()
     {
         material = new Material(Shader.Find("Hidden/Internal-Colored"));
@@ -33,7 +36,8 @@ public class Tool : BaseTool<PointsData>
         boxBlueColorSlider = GameObject.Find("BoxBlueColorSlider").GetComponent<Slider>();
         boxAlphaColorSlider = GameObject.Find("BoxAlphaColorSlider").GetComponent<Slider>();
         wireframeToggle = GameObject.Find("WireframeToggle").GetComponent<Toggle>();
-
+        quadToggle = GameObject.Find("QuadToggle").GetComponent<Toggle>();
+        pointAmountText = GameObject.Find("PointAmountText").GetComponent<Text>();
         CreateData();
         LoadPointsData();
         LoadConfigData();
@@ -43,18 +47,22 @@ public class Tool : BaseTool<PointsData>
     void Update()
     {
         pointSize = pointSizeSlider.value;
-        wireframe = wireframeToggle.isOn;
+        wireframeMode = wireframeToggle.isOn;
+        quadMode = quadToggle.isOn;
         boxColor = new Color(boxRedColorSlider.value, boxGreenColorSlider.value, boxBlueColorSlider.value, boxAlphaColorSlider.value);
+        pointFaceAmount = quadMode ? 1 : 6;
+
+        pointAmountText.text = "Point Amount: " + (data.positions.Count / 3).ToString();
 
         //cria uma plano invisivel na frente da camera e cria pontos com o clique do mouse. A origem do plano fica na posicao do gizmo da camera.
         if (Input.GetMouseButtonDown(0) && canSpawnPoints)
         {
 
             Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Plane groundPlane = new Plane(-Camera.main.transform.forward, gizmoCamera.origin);
+            Plane plane = new Plane(-Camera.main.transform.forward, gizmoCamera.origin);
             float rayLenght;
 
-            if (groundPlane.Raycast(cameraRay, out rayLenght))
+            if (plane.Raycast(cameraRay, out rayLenght))
             {
                 Vector3 pointPosition = cameraRay.GetPoint(rayLenght);
 
@@ -99,7 +107,6 @@ public class Tool : BaseTool<PointsData>
 
 
     }
-
 
 
     void DefineStartBoxExtension(Vector3 pointPosition)
@@ -151,15 +158,16 @@ public class Tool : BaseTool<PointsData>
 
         int[,] triangles =
         {
-            {0,3,1,2}, //top
-            {6,7,5,4}, //bot
             {4,0,5,1}, //front
             {6,2,7,3}, //back
+            {0,3,1,2}, //top
+            {6,7,5,4}, //bot
             {7,3,4,0}, //left
             {5,1,6,2}, //right
 
         };
 
+        //Pontos
         for (int i = 0; i < data.positions.Count; i += 3)
         {
             float x = data.positions[i];
@@ -170,14 +178,13 @@ public class Tool : BaseTool<PointsData>
             Vector3 origin = new Vector3(x, y, z);
 
 
-            for (int j = 0; j < 6; j++)
+            for (int j = 0; j < pointFaceAmount; j++)
             {
                 GL.PushMatrix();
                 GL.Begin(GL.TRIANGLES);
-                GL.Color(Color.red);
+                GL.Color(new Color(0, 1, 1));
 
                 GL.Vertex(origin + pointVertices[triangles[j, 0]] * pointSize);
-
                 GL.Vertex(origin + pointVertices[triangles[j, 1]] * pointSize);
                 GL.Vertex(origin + pointVertices[triangles[j, 2]] * pointSize);
                 GL.Vertex(origin + pointVertices[triangles[j, 2]] * pointSize);
@@ -193,7 +200,8 @@ public class Tool : BaseTool<PointsData>
 
         }
 
-        GL.wireframe = wireframe;
+        //Bounding Box
+        GL.wireframe = wireframeMode;
 
         Vector3[] boundingBoxVertices =
         {
@@ -248,7 +256,8 @@ public class Tool : BaseTool<PointsData>
     {
         StreamWriter configFileWriter = new StreamWriter("Assets/Resources/configData.txt");
 
-        configFileWriter.WriteLine(wireframe ? "1" : "0");
+        configFileWriter.WriteLine(wireframeMode ? "1" : "0");
+        configFileWriter.WriteLine(quadMode ? "1" : "0");
         configFileWriter.WriteLine(pointSize.ToString());
         configFileWriter.WriteLine(boxColor.r + " " + boxColor.g + " " + boxColor.b + " " + boxColor.a);
         configFileWriter.Close();
@@ -301,19 +310,25 @@ public class Tool : BaseTool<PointsData>
             string[] splittedText = text.Split(' ', '\n');
 
             if (splittedText[0].Trim() == "1")
-                wireframe = true;
+                wireframeMode = true;
             else
-                wireframe = false;
+                wireframeMode = false;
+
+            if (splittedText[1].Trim() == "1")
+                quadMode = true;
+            else
+                quadMode = false;
 
 
-            float.TryParse(splittedText[1], out pointSize);
-            float.TryParse(splittedText[2], out boxColor.r);
-            float.TryParse(splittedText[3], out boxColor.g);
-            float.TryParse(splittedText[4], out boxColor.b);
-            float.TryParse(splittedText[5], out boxColor.a);
+            float.TryParse(splittedText[2], out pointSize);
+            float.TryParse(splittedText[3], out boxColor.r);
+            float.TryParse(splittedText[4], out boxColor.g);
+            float.TryParse(splittedText[5], out boxColor.b);
+            float.TryParse(splittedText[6], out boxColor.a);
 
             pointSizeSlider.value = pointSize;
-            wireframeToggle.isOn = wireframe;
+            wireframeToggle.isOn = wireframeMode;
+            quadToggle.isOn = quadMode;
 
             boxRedColorSlider.value = boxColor.r;
             boxGreenColorSlider.value = boxColor.g;
