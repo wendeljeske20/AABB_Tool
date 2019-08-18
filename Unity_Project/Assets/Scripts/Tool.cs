@@ -20,7 +20,7 @@ public class Tool : BaseTool<PointsData>
     bool canSpawnPoints = true;
     float lowestPointX, highestPointX, lowestPointY, highestPointY, lowestPointZ, highestPointZ;
 
-    public int pointCount;
+    [HideInInspector] public int pointCount;
     [HideInInspector] public bool wireframeMode, quadMode;
     [HideInInspector] public float pointSize;
     [HideInInspector] public Color boxColor;
@@ -28,10 +28,12 @@ public class Tool : BaseTool<PointsData>
 
     void Start()
     {
+        // Debug.Log(Application.dataPath);
+        // Debug.Log(Application.persistentDataPath);
+        // Debug.Log(Application.streamingAssetsPath);
+        // Debug.Log(Application.temporaryCachePath);
         material = new Material(Shader.Find("Hidden/Internal-Colored"));
         gizmoCamera = GameObject.Find("Main Camera").GetComponent<GizmoCamera>();
-        //display = GameObject.Find("Display").GetComponent<Display>();
-
 
         CreateData();
         LoadPointsData();
@@ -43,6 +45,7 @@ public class Tool : BaseTool<PointsData>
     {
         pointFaceAmount = quadMode ? 1 : 6;
         pointCount = data.positions.Count / 3;
+
         //cria uma plano invisivel na frente da camera e cria pontos com o clique do mouse. 
         //A origem do plano fica na posicao do gizmo da camera.
         if (Input.GetMouseButtonDown(0) && canSpawnPoints)
@@ -59,7 +62,7 @@ public class Tool : BaseTool<PointsData>
 
                 if (data.positions.Count == 0)
                 {
-                    DefineStartBoxExtension(pointPosition);
+                    ResetBoundingBoxDimensions(pointPosition);
                 }
 
                 data.positions.Add(pointPosition.x);
@@ -67,7 +70,7 @@ public class Tool : BaseTool<PointsData>
                 data.positions.Add(pointPosition.z);
 
 
-                CheckPointExtension(pointPosition);
+                CheckPoint(pointPosition);
 
 
             }
@@ -84,11 +87,11 @@ public class Tool : BaseTool<PointsData>
 
                 if (data.positions.Count >= 3)
                 {
-                    DefineStartBoxExtension(new Vector3(data.positions[0], data.positions[1], data.positions[2]));
+                    ResetBoundingBoxDimensions(new Vector3(data.positions[0], data.positions[1], data.positions[2]));
                     for (int i = 0; i < data.positions.Count; i += 3)
                     {
 
-                        CheckPointExtension(new Vector3(data.positions[i], data.positions[i + 1], data.positions[i + 2]));
+                        CheckPoint(new Vector3(data.positions[i], data.positions[i + 1], data.positions[i + 2]));
                     }
                 }
             }
@@ -101,7 +104,7 @@ public class Tool : BaseTool<PointsData>
 
 
 
-    void DefineStartBoxExtension(Vector3 pointPosition)
+    void ResetBoundingBoxDimensions(Vector3 pointPosition)
     {
         lowestPointX = pointPosition.x;
         lowestPointY = pointPosition.y;
@@ -112,7 +115,7 @@ public class Tool : BaseTool<PointsData>
         highestPointZ = pointPosition.z;
     }
 
-    void CheckPointExtension(Vector3 pointPosition)
+    void CheckPoint(Vector3 pointPosition)
     {
         if (pointPosition.x < lowestPointX)
             lowestPointX = pointPosition.x;
@@ -171,19 +174,18 @@ public class Tool : BaseTool<PointsData>
             new Vector3(-1,-1,1), //7
         };
 
+        //rotaciona os pontos de acordo com a visao da camera
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = Camera.main.transform.rotation * vertices[i];
+        }
+
         for (int i = 0; i < data.positions.Count; i += 3)
         {
-            float x = data.positions[i];
-            float y = data.positions[i + 1];
-            float z = data.positions[i + 2];
-
-
-            Vector3 origin = new Vector3(x, y, z);
-
+            Vector3 origin = new Vector3(data.positions[i], data.positions[i + 1], data.positions[i + 2]);
 
             for (int j = 0; j < pointFaceAmount; j++)
             {
-                GL.PushMatrix();
                 GL.Begin(GL.TRIANGLES);
                 GL.Color(new Color(0, 1, 1));
 
@@ -194,12 +196,8 @@ public class Tool : BaseTool<PointsData>
                 GL.Vertex(origin + vertices[triangles[j, 1]] * pointSize);
                 GL.Vertex(origin + vertices[triangles[j, 3]] * pointSize);
                 GL.End();
-                GL.PopMatrix();
 
             }
-
-
-
 
         }
     }
@@ -222,7 +220,6 @@ public class Tool : BaseTool<PointsData>
 
         for (int j = 0; j < 6; j++)
         {
-            GL.PushMatrix();
             GL.Begin(GL.TRIANGLES);
             GL.Color(boxColor);
 
@@ -233,7 +230,6 @@ public class Tool : BaseTool<PointsData>
             GL.Vertex(vertices[triangles[j, 1]]);
             GL.Vertex(vertices[triangles[j, 3]]);
             GL.End();
-            GL.PopMatrix();
 
         }
     }
@@ -241,14 +237,12 @@ public class Tool : BaseTool<PointsData>
     public void ClearPoints()
     {
         data.positions.Clear();
-        DefineStartBoxExtension(Vector3.zero);
+        ResetBoundingBoxDimensions(Vector3.zero);
     }
     public void SavePointsData()
     {
         data.SavePointsData();
     }
-
-
 
     public void LoadPointsData()
     {
@@ -261,10 +255,10 @@ public class Tool : BaseTool<PointsData>
 
             if (i == 0)
             {
-                DefineStartBoxExtension(pointPosition);
+                ResetBoundingBoxDimensions(pointPosition);
             }
 
-            CheckPointExtension(pointPosition);
+            CheckPoint(pointPosition);
         }
 
 

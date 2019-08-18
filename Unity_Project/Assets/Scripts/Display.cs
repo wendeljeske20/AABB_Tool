@@ -49,8 +49,12 @@ public class Display : MonoBehaviour
 
     public void SaveConfigData()
     {
-        StreamWriter configFileWriter = new StreamWriter("Assets/Resources/configData.txt");
+		string path = Application.streamingAssetsPath + "/configData.txt";
+        StreamWriter configFileWriter = new StreamWriter(path);
 
+//AssetDatabase.ImportAsset(path); 
+        //TextAsset asset = Resources.Load("configData") as TextAsset;
+		
         configFileWriter.WriteLine(tool.wireframeMode ? "1" : "0");
         configFileWriter.WriteLine(tool.quadMode ? "1" : "0");
         configFileWriter.WriteLine(tool.pointSize.ToString());
@@ -60,7 +64,7 @@ public class Display : MonoBehaviour
 
     public void LoadConfigData()
     {
-        StreamReader configFileReader = new StreamReader("Assets/Resources/configData.txt");
+        StreamReader configFileReader = new StreamReader(Application.streamingAssetsPath + "/configData.txt");
 
         string text = configFileReader.ReadToEnd();
 

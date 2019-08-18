@@ -38,7 +38,7 @@ public class PointsData : IData
     public void SavePointsData()
     {
 
-        StreamWriter pointsFileWriter = new StreamWriter("Assets/Resources/pointsData.txt");
+        StreamWriter pointsFileWriter = new StreamWriter(Application.streamingAssetsPath +"/pointsData.txt");
 
         pointsFileWriter.Write(Encode());
         pointsFileWriter.Close();
@@ -49,7 +49,7 @@ public class PointsData : IData
 
     public void LoadPointsData()
     {
-        StreamReader pointsFileReader = new StreamReader("Assets/Resources/pointsData.txt");
+        StreamReader pointsFileReader = new StreamReader(Application.streamingAssetsPath +"/pointsData.txt");
         string text = pointsFileReader.ReadToEnd();
 
         if (text != "")
