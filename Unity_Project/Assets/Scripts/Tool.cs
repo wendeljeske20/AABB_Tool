@@ -7,10 +7,6 @@ using VIZLab;
 
 public class Tool : BaseTool<PointsData>
 {
-    //public string[] splittedText;
-
-    //public Color pointColor;
-
     GizmoCamera gizmoCamera;
     Material material;
 
